@@ -395,30 +395,43 @@ extern "C" void* ThreadStats(void*) {
       requests += dnsThread[i]->dns_opt.nRequests;
       queries += dnsThread[i]->dbQueries;
     }
-    printf("%s %i/%i available (%i tried in %is, %i new, %i active), %i banned; %llu DNS requests, %llu db queries", c, stats.nGood, stats.nAvail, stats.nTracked, stats.nAge, stats.nNew, stats.nAvail - stats.nTracked - stats.nNew, stats.nBanned, (unsigned long long)requests, (unsigned long long)queries);
+//    printf("%s %i/%i available (%i tried in %is, %i new, %i active), %i banned; %llu DNS requests, %llu db queries", c, stats.nGood, stats.nAvail, stats.nTracked, stats.nAge, stats.nNew, stats.nAvail - stats.nTracked - stats.nNew, stats.nBanned, (unsigned long long)requests, (unsigned long long)queries);
     Sleep(1000);
   } while(1);
   return nullptr;
 }
 
-static const string mainnet_seeds[] = {"dnsseed.oizopower.nl", ""};
-static const string testnet_seeds[] = {""};
+static const string mainnet_seeds[] = {"dnsseed.oizopower.nl","dnsseed-cn.whitecoin.info", ""};
+static const string testnet_seeds[] = {"dnsseed.posfans.org", ""};
 static const string *seeds = mainnet_seeds;
 
 extern "C" void* ThreadSeeder(void*) {
   if (!fTestNet){
+
     db.Add(CService("seed1.oizopower.nl", 15814), true);
     db.Add(CService("seed2.oizopower.nl", 15814), true);
     db.Add(CService("seed3.oizopower.nl", 15814), true);
   }
-  do {
+  else
+   {
+        seeds = testnet_seeds;
+   }
+
+  do
+  {
     for (int i=0; seeds[i] != ""; i++) {
       vector<CNetAddr> ips;
       LookupHost(seeds[i].c_str(), ips);
-      for (vector<CNetAddr>::iterator it = ips.begin(); it != ips.end(); it++) {
-        db.Add(CService(*it, GetDefaultPort()), true);
+      printf("\n\nseeds[%d]: %s \n",i, seeds[i].c_str());
+
+      for (vector<CNetAddr>::iterator it = ips.begin(); it != ips.end(); it++)
+      {
+        CService tempservice(*it, GetDefaultPort());
+        db.Add(tempservice, true);
+        printf("ThreadSeeder addips: %s \n", tempservice.ToString().c_str());
       }
     }
+
     Sleep(1800000);
   } while(1);
   return nullptr;
@@ -462,9 +475,9 @@ int main(int argc, char **argv) {
   if (opts.fUseTestNet) {
       printf("Using testnet.\n");
       pchMessageStart[0] = 0x18;
-      pchMessageStart[1] = 0x2d;
-      pchMessageStart[2] = 0x43;
-      pchMessageStart[3] = 0xf3;
+      pchMessageStart[1] = 0xcd;
+      pchMessageStart[2] = 0xd1;
+      pchMessageStart[3] = 0xf7;
       seeds = testnet_seeds;
       fTestNet = true;
   }
