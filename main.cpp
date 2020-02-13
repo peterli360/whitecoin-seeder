@@ -401,16 +401,16 @@ extern "C" void* ThreadStats(void*) {
   return nullptr;
 }
 
-static const string mainnet_seeds[] = {"dnsseed.oizopower.nl","dnsseed-cn.whitecoin.info", ""};
+static const string mainnet_seeds[] = {"dnsseeder.whitecoin.in","dnsseeder.whitecoin.pub","dnsseed.oizopower.nl", ""};
 static const string testnet_seeds[] = {"dnsseed.posfans.org", ""};
 static const string *seeds = mainnet_seeds;
 
 extern "C" void* ThreadSeeder(void*) {
   if (!fTestNet){
 
-    db.Add(CService("seed1.oizopower.nl", 15814), true);
-    db.Add(CService("seed2.oizopower.nl", 15814), true);
-    db.Add(CService("seed3.oizopower.nl", 15814), true);
+    db.Add(CService("seed.whitecoin.in",  15814), true);
+    db.Add(CService("seed1.whitecoin.in", 15814), true);
+    db.Add(CService("seed.xwccore.com",   15814), true);
   }
   else
    {
